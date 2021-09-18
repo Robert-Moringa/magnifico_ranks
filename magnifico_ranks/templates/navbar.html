@@ -27,6 +27,39 @@
           </li>
         </ul>
       </div>
+
+      <div class="col-sm-6 col-md-6">
+        {% if user.is_authenticated %}
+        <ul>
+          <li class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">Account
+                      <span class="caret"></span>
+                  </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li>
+                <a href="{%url 'home'%}" class="dropdown-item">Home</a>
+              </li>
+              <li>
+                <a href="{%url 'home'%}" class="dropdown-item">Create Article</a>
+              </li>
+              <li>
+                <a href="/accounts/password/change" class="dropdown-item">Change Password</a>
+              </li>
+              <li>
+                <a href="accounts/logout" class="dropdown-item">Logout</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        {% else %}
+        <li>
+          <a class='btn btn-default' href="/accounts/login">Login</a>
+        </li>
+  
+        <p></p>
+  
+        {% endif %}
+      </div>
     </div>
   </nav>
   
