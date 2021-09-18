@@ -1,5 +1,5 @@
 from django.db import models
-from .models import Image,Review,Project
+# from .models import Image,Review,Project
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -45,7 +45,7 @@ class Review(models.Model):
     RATING_CHOICES = ((1, '1'),(2, '2'),(3, '3'),(4, '4'),(5, '5'),(6, '6'),(7, '7'),(8, '8'),(9, '9'),(10, '10'),)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE, related_name="reviews")
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='reviews')
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="reviews", null=True, blank=True)
+    image = models.ForeignKey('Image', on_delete=models.CASCADE, related_name="reviews", null=True, blank=True)
     comment = models.TextField()
     design_rating = models.IntegerField(choices=RATING_CHOICES, default=0)
     usability_rating = models.IntegerField(choices=RATING_CHOICES, default=0)
@@ -117,7 +117,7 @@ class Profile(models.Model):
     bio = models.TextField(max_length=200, null=True, blank=True, default="bio")
     profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True, default= 0)
     user=models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name="profile")
-    project=models.ForeignKey(Project, null=True)
+    project=models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     contact=models.IntegerField(default=0)
 
     def create_user_profile(sender, instance, created, **kwargs):
@@ -146,3 +146,17 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
+    value = models.IntegerField(default=True, null=True, blank=True)
+
+    def save_like(self):
+        self.save()
+
+    def __str__(self):
+        return str(self.user) + ':' + str(self.image) + ':' + str(self.value)
+
+    class Meta:
+        unique_together = ("user", "image", "value")
