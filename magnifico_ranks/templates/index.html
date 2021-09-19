@@ -5,4 +5,29 @@
  {{block.super}}
 
  <h1 class="text-center">Magnifico Ranks coming up next; are you ready to be entertained?</h1>
+
+ {%for project in projects%}
+ <div class="card col-md-3" style="margin-left: 20px; margin-right: 20px;">
+    <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+      <img
+        src="{{project.project_image.url}}"
+        class="img-fluid"
+      />
+      <a href="#!">
+        <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+      </a>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{project.name}}</h5>
+      <p class="card-text">
+        {{project.about}}
+      </p>
+      <a href="{{project.project_link}}" class="btn btn-primary">View {{project.name}} site</a>
+    </div>
+  </div>
+{% empty %}
+    <div class="row">
+        <h2 class="text-center">There no projects added yet</h2>
+    </div>
+{%endfor%}
 {% endblock %}
