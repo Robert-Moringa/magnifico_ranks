@@ -1,5 +1,4 @@
 from django.db import models
-# from .models import Image,Review,Project
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -8,6 +7,7 @@ class Project(models.Model):
     project_image = models.ImageField(upload_to='Project_images/', null=True, blank=True)
     about = models.TextField()
     project_link=models.URLField(max_length=250)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='project')
 
 
     def save_project(self):
@@ -22,6 +22,10 @@ class Project(models.Model):
     def get_project_by_id(cls, id):
         projects = cls.objects.get(pk=id)
         return projects
+
+    def get_project_by_user(cls, user):
+        projects = cls.objects.filter(user__icontains=user)
+        return projects.name
 
     @classmethod
     def search_projects(cls, search_term):
@@ -133,6 +137,9 @@ class Profile(models.Model):
     def delete_profile(self):
         self.delete()
 
+    def get_profile(cls, user):
+        profile = cls.objects.filter(user=user)
+        return profile
 
     @classmethod
     def search_users(cls, search_term):
