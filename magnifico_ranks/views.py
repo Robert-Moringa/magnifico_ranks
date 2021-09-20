@@ -5,7 +5,7 @@ from .forms import EditProfileForm
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializer import ProfileSerializer
+from .serializer import ProfileSerializer, ProjectSerializer
 from .permissions import IsAdminOrReadOnly
 
 
@@ -49,6 +49,21 @@ class profileList(APIView):
 
     permission_classes = (IsAdminOrReadOnly,)
 
+class projectList(APIView):
+    def get(self, request, format=None):
+        all_profiles= Project.objects.all()
+        serializers = ProjectSerializer(all_profiles, many=True)
+        return Response(serializers.data)
+
+    def post(self, request, format=None):
+        serializers = ProjectSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    permission_classes = (IsAdminOrReadOnly,)
+
 
 class ProfileDescription(APIView):
     permission_classes = (IsAdminOrReadOnly,)
@@ -74,5 +89,32 @@ class ProfileDescription(APIView):
 
     def delete(self, request, pk, format=None):
         merch = self.get_profile(pk)
+        merch.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ProjectDescription(APIView):
+    permission_classes = (IsAdminOrReadOnly,)
+    def get_project(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            return Http404
+
+    def get(self, request, pk, format=None):
+        merch = self.get_project(pk)
+        serializers = ProjectSerializer(merch)
+        return Response(serializers.data)
+
+    def put(self, request, pk, format=None):
+        merch = self.get_merch(pk)
+        serializers = ProjectSerializer(merch, request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        merch = self.get_project(pk)
         merch.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
