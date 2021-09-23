@@ -1,0 +1,1 @@
+web: gunicorn magnifico.wsgi --log-file -
