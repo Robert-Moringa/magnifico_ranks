@@ -1,12 +1,13 @@
-from django.http.response import Http404
+from django.http.response import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Profile, Project
-from .forms import EditProfileForm
+from .models import Profile, Project, Review
+from .forms import EditProfileForm, AddProjectForm, AddReviewForm
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import ProfileSerializer, ProjectSerializer
 from .permissions import IsAdminOrReadOnly
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -34,6 +35,75 @@ def profile(request):
     
     return render(request, 'profile.html', {'title':title, 'profile':profile,'form':form})
 
+def new_project(request):
+    title='Add a project of your own'
+    current_user = request.user
+    project=Project.objects.all()
+    if request.method == 'POST':
+        form =AddProjectForm(request.POST, request.FILES)
+        print(form.is_valid())
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.user =current_user
+            
+            project.save()
+        return redirect('home')
+
+    else:
+        form = AddProjectForm()
+    
+    return render(request, 'new_project.html', {'title':title,'form':form})
+
+
+@login_required(login_url='login')
+def review(request, project):
+    projects=Project.objects.get(id=project)
+    rankings=Review.objects.filter(project=projects).all()
+    # status=None
+   
+    if request.method=='POST':
+        form=AddReviewForm(request.POST)
+        if form.is_valid():
+            rating=form.save(commit=False)
+            rating.user=request.user
+            rating.project=projects
+            rating.save()
+
+            project_ratings=Review.objects.filter(project=project)
+
+            design=[r.design_rating for r in project_ratings]
+            design_average=sum(design) /len(design)
+
+            content=[c.content_rating for c in project_ratings]
+            content_average=sum(content) /len(content)
+
+            usability=[u.usability_rating for u in project_ratings]
+            usability_average=sum(usability) /len(usability)
+
+            score=(design_average + content_average + usability_average)/3
+
+            rating.design_avg=round(design_average, 2)
+            rating.usability_avg=round(usability_average, 2)
+            rating.content_avg=round(content_average, 2)
+            rating.score=round(score, 2)
+            rating.save()
+            print(rating)
+
+            return HttpResponseRedirect(request.path_info)
+    else:
+        form=AddReviewForm()
+
+    parameters={
+        'project':project,
+        'rank_form':form,
+        'id':project,
+        'ranks':rankings
+        # 'rating_status':status
+    }
+    return render(request, 'review.html', parameters )
+
+
+    #    API
 class profileList(APIView):
     def get(self, request, format=None):
         all_profiles= Profile.objects.all()

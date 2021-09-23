@@ -8,7 +8,6 @@ class Project(models.Model):
     about = models.TextField()
     project_link=models.URLField(max_length=250)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    ratings = models.ForeignKey('Review', null=True, blank=True, on_delete=models.CASCADE, related_name='riet')
     
 
     def save_project(self):
@@ -47,11 +46,16 @@ class Project(models.Model):
         return self.name
 
 class Review(models.Model):
-    RATING_CHOICES = ((1, '1'),(2, '2'),(3, '3'),(4, '4'),(5, '5'),(6, '6'),(7, '7'),(8, '8'),(9, '9'),(10, '10'),)
-    design_rating = models.IntegerField(choices=RATING_CHOICES, default=0)
-    usability_rating = models.IntegerField(choices=RATING_CHOICES, default=0)
-    content_rating = models.IntegerField(choices=RATING_CHOICES, default=0)
+    Rank_Index= ((1, '1'),(2, '2'),(3, '3'),(4, '4'),(5, '5'),(6, '6'),(7, '7'),(8, '8'),(9, '9'),(10, '10'),)
+
+    design_rating = models.IntegerField(choices=Rank_Index, default=0)
+    design_avg=models.FloatField(default=0, blank=True)
+    usability_rating = models.IntegerField(choices=Rank_Index, default=0)
+    usability_avg=models.FloatField(default=0, blank=True)
+    content_rating = models.IntegerField(choices=Rank_Index, default=0)
+    content_avg=models.FloatField(default=0, blank=True)
     comment = models.TextField()
+    score=models.FloatField(default=0, blank=True)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
@@ -61,6 +65,10 @@ class Review(models.Model):
     def get_review(self, id):
         reviews = Review.objects.filter(project=id)
         return reviews
+
+    def average(self,design_rating, usability_rating, content_rating):
+        avg=(design_rating+ usability_rating+content_rating)/2
+        return avg
 
     def __str__(self):
         return self.comment
