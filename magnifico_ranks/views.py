@@ -19,21 +19,23 @@ def home(request):
 def profile(request):
     title='Build your profile'
     current_user = request.user
-    profile=Profile.objects.all()
+    
     if request.method == 'POST':
         form = EditProfileForm(request.POST, request.FILES, instance=current_user.profile)
         print(form.is_valid())
         if form.is_valid():
             profile = form.save(commit=False)
             profile.user =current_user
-            profile.project =Project.get_project_by_user(current_user)
             profile.save()
         return redirect('profile')
 
     else:
         form = EditProfileForm()
-    
-    return render(request, 'profile.html', {'title':title, 'profile':profile,'form':form})
+
+    project=Project.get_project_by_user(Project,current_user)
+    user=current_user
+    profile=Profile.get_profile(Profile, user)
+    return render(request, 'profile.html', {'title':title, 'profile':profile, 'projects':project,'form':form})
 
 def new_project(request):
     title='Add a project of your own'

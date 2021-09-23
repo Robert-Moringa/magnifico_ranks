@@ -24,8 +24,8 @@ class Project(models.Model):
         return projects
 
     def get_project_by_user(cls, user):
-        projects = cls.objects.filter(user__icontains=user)
-        return projects.name
+        projects = cls.objects.filter(user=user)
+        return projects
 
     @classmethod
     def search_projects(cls, search_term):
@@ -56,7 +56,6 @@ class Review(models.Model):
     content_avg=models.FloatField(default=0, blank=True)
     comment = models.TextField()
     score=models.FloatField(default=0, blank=True)
-    project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def save_review(self):
