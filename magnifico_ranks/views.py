@@ -105,6 +105,22 @@ def review(request, project):
     return render(request, 'review.html', parameters )
 
 
+def search_project(request):
+    title="Find"
+    projects=Project.objects.all()
+    
+    if 'project_name' in request.GET and request.GET['project_name']:
+        search_term = request.GET.get('project_name')
+        found_results = Project.objects.filter(name__icontains=search_term)
+        message = f"{search_term}"
+
+        return render(request, 'search.html',{'title':title,'results': found_results, 'message': message})
+
+    else:
+        message = "You haven't searched for any term"
+        return render(request, 'search.html',{"message":message})
+
+
     #    API
 class profileList(APIView):
     def get(self, request, format=None):

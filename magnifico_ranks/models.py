@@ -56,6 +56,7 @@ class Review(models.Model):
     content_avg=models.FloatField(default=0, blank=True)
     comment = models.TextField()
     score=models.FloatField(default=0, blank=True)
+    project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def save_review(self):
@@ -80,7 +81,6 @@ class Profile(models.Model):
     bio = models.TextField(max_length=200, null=True, blank=True, default="Joy, peace...")
     profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True, default= 0)
     user=models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    project=models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     contact=models.IntegerField(default=0)
 
     def create_user_profile(sender, instance, created, **kwargs):
