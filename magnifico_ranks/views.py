@@ -15,7 +15,8 @@ def home(request):
     projects=Project.objects.all()
     title='Welcome in a array of superb projects that are awaiting your genuine vote.'
     return render(request, 'index.html', {'title':title, 'projects':projects})
-
+    
+@login_required(login_url='login')
 def profile(request):
     title='Build your profile'
     current_user = request.user
@@ -37,6 +38,7 @@ def profile(request):
     profile=Profile.get_profile(Profile, user)
     return render(request, 'profile.html', {'title':title, 'profile':profile, 'projects':project,'form':form})
 
+@login_required(login_url='login')
 def new_project(request):
     title='Add a project of your own'
     current_user = request.user

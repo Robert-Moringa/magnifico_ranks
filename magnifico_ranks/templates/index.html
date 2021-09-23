@@ -17,12 +17,12 @@
     </a>
   </div>
   <div class="card-body">
-    <h5 class="card-title">{{project.name}}</h5>
+    <h5 style="color:rgb(106, 4, 15);" class="card-title">{{project.name}}</h5>
     <p class="card-text">
       {{project.about}}
     </p>
-    <a href="{{project.project_link}}" class="btn btn-primary">View {{project.name}} site</a>
-    <a href="{%url 'review' project.id%}" class="btn btn-primary">Review & Rate</a>
+    <a href="{{project.project_link}}" style="background-color:rgb(106, 4, 15);" class="btn btn-primary">View {{project.name}} site</a>
+    <a href="{%url 'review' project.id%}"  style="background-color:rgb(106, 4, 15);"class="btn btn-primary">Review & Rate</a>
     <hr>
     <p>By <em><strong>{{project.user.username}}</strong></em></p>
   </div>
